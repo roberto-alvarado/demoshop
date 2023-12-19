@@ -3,3 +3,4 @@ Pillow
 mysqlclient
 django-admin-tailwind
 django-paypal
+python-decouple

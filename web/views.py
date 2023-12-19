@@ -17,6 +17,8 @@ from paypal.standard.forms import PayPalPaymentsForm
 
 from django.core.mail import send_mail
 
+from django.conf import settings
+
 # Create your views here.
 """ VISTAS PARA EL CATALOGO DE PRODUCTOS"""
 def index(request):
@@ -218,25 +220,6 @@ def actualizarCliente(request):
 
     return render(request,'cuenta.html',context)
 
-""" VISTAS PARA PRUEBA CON PAYPAL """
-def view_that_asks_for_money(request):
-
-    # What you want the button to do.
-    paypal_dict = {
-        "business": "sb-gbmvl28777008@business.example.com",
-        "amount": "100.00",
-        "item_name": "producto de prueba",
-        "invoice": "100-ED100",
-        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
-        "return": request.build_absolute_uri('/'),
-        "cancel_return": request.build_absolute_uri('/logout'),
-        "custom": "premium_plan",  # Custom command to correlate to some function later (optional)
-    }
-
-    # Create the instance.
-    form = PayPalPaymentsForm(initial=paypal_dict)
-    context = {"form": form}
-    return render(request, "payment.html", context)
 
 """ VISTAS PARA EL PROCESO DE COMPRA """
 @login_required(login_url='/login')
@@ -320,7 +303,7 @@ def confirmarPedido(request):
 
         #Creamos boton de paypal         
         paypal_dict = {
-        "business": "sb-gbmvl28777008@business.example.com",
+        "business": settings.PAYPAL_USER_EMAIL,
         "amount": montoTotal,
         "item_name": "PEDIDO CODIGO:" + nroPedido,
         "invoice": nroPedido,
@@ -357,7 +340,7 @@ def gracias(request):
         send_mail(
             "GRACIAS POR TU COMPRA",
             "Tu nro de pedido es" + pedido.nro_pedido,
-            "cmaytaedteam@gmail.com",
+            settings.ADMIN_USER_EMAIL,
             [request.user.email],
             fail_silently=False,
         )
